@@ -2,6 +2,74 @@
 
 A CLI tool for common tasks with JavaScript Web Tokens (JWT), including decoding and signature validation.
 
+## Installation
+
+### Option 1: Download Pre-built Binaries
+
+Visit the [Releases](https://github.com/yourusername/jwt/releases) page to download pre-built binaries for your platform:
+
+- Windows (amd64): `jwt_windows_x86_64.zip`
+- macOS (amd64): `jwt_darwin_x86_64.tar.gz`
+- macOS (arm64): `jwt_darwin_arm64.tar.gz`
+- Linux (amd64): `jwt_linux_x86_64.tar.gz`
+- Linux (arm64): `jwt_linux_arm64.tar.gz`
+
+### Adding to System PATH
+
+#### Windows
+1. Extract the zip file
+2. Move `jwt.exe` to a permanent location (e.g., `C:\Program Files\jwt\`)
+3. Add to PATH:
+   - Press Win + X and select "System"
+   - Click "Advanced system settings"
+   - Click "Environment Variables"
+   - Under "System Variables", find and select "Path"
+   - Click "Edit" → "New"
+   - Add the folder path (e.g., `C:\Program Files\jwt\`)
+   - Click "OK" on all windows
+   - Restart any open command prompts
+
+#### macOS
+1. Extract the tar.gz file
+2. Option A - Using /usr/local/bin (requires admin rights):
+   ```bash
+   sudo mv jwt /usr/local/bin/
+   ```
+   
+   Option B - Using ~/bin (no admin rights needed):
+   ```bash
+   mkdir -p ~/bin
+   mv jwt ~/bin/
+   echo 'export PATH="$HOME/bin:$PATH"' >> ~/.zshrc  # For Zsh
+   echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bash_profile  # For Bash
+   source ~/.zshrc  # Or source ~/.bash_profile for Bash
+   ```
+
+#### Linux
+1. Extract the tar.gz file
+2. Option A - System-wide installation (requires sudo):
+   ```bash
+   sudo mv jwt /usr/local/bin/
+   ```
+
+   Option B - User-specific installation:
+   ```bash
+   mkdir -p ~/.local/bin
+   mv jwt ~/.local/bin/
+   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+   # If using Zsh, also add to ~/.zshrc:
+   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+   source ~/.bashrc  # Or source ~/.zshrc for Zsh
+   ```
+
+### Verify Installation
+After adding to PATH, verify the installation:
+```bash
+jwt --version
+```
+
+If successful, you can now use the `jwt` command from any terminal location.
+
 ## Features
 
 - **JWT Decoder**: Parse and display JWT tokens
@@ -138,8 +206,6 @@ The CLI will return appropriate error messages for:
 ## What's Next?
 
 I'm planning to add more utilities as I need them. Feel free to suggest ideas or contribute!
-
-```
 
 ---
 

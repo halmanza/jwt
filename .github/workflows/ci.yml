@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -20,7 +22,7 @@ jobs:
 
     - name: Build
       run: |
-        go build -ldflags "-X main.Version=dev" -v ./...
+        go build -ldflags "-X main.Version=dev -X main.commit=${{ github.sha }} -X main.date=$(date -u +'%Y-%m-%d_%H:%M:%S')" -v ./...
 
     - name: Test
       run: go test -v ./...
@@ -52,6 +54,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -61,7 +65,7 @@ jobs:
 
     - name: Build
       run: |
-        go build -ldflags "-X main.Version=dev" -v ./...
+        go build -ldflags "-X main.Version=dev -X main.commit=${{ github.sha }} -X main.date=$(date -u +'%Y-%m-%d_%H:%M:%S')" -v ./...
 
     - name: Test
       run: go test -v ./... 

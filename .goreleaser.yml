@@ -51,3 +51,15 @@ changelog:
       - '^ci:'
       - Merge pull request
       - Merge branch 
+
+# Only run on tags
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=0
+
+# Skip if not a release
+skip:
+  - event: pull_request
+  - event: push
+  - event: release
+    type: [created] 

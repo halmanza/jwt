@@ -1,0 +1,113 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          check-latest: true
+          
+      - name: Run tests
+        run: go test -v ./...
+        
+      - name: Run linter
+        run: |
+          go install golang.org/x/lint/golint@latest
+          golint ./...
+          
+      - name: Check formatting
+        run: go fmt ./...
+        
+      - name: Run security scan
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec ./...
+          
+      - name: Run golangci-lint
+        run: |
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          golangci-lint run
+
+  build:
+    needs: test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        arch: [amd64, arm64]
+        exclude:
+          - os: windows-latest
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          check-latest: true
+          
+      - name: Build
+        run: |
+          GOOS=${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'windows' || 'darwin' }} \
+          GOARCH=${{ matrix.arch }} \
+          go build -o utilities_cli-${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'windows' || 'darwin' }}-${{ matrix.arch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./cmd/cli
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: utilities_cli-${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'windows' || 'darwin' }}-${{ matrix.arch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          path: utilities_cli-${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'windows' || 'darwin' }}-${{ matrix.arch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Verify tag is on main branch
+        run: |
+          TAG_BRANCH=$(git branch -r --contains ${{ github.ref }} | grep 'main' || echo '')
+          if [ -z "$TAG_BRANCH" ]; then
+            echo "Error: Tags must be created from the main branch"
+            exit 1
+          fi
+          
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/utilities_cli-linux-amd64
+            artifacts/utilities_cli-linux-arm64
+            artifacts/utilities_cli-windows-amd64.exe
+            artifacts/utilities_cli-darwin-amd64
+            artifacts/utilities_cli-darwin-arm64
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

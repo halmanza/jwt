@@ -64,8 +64,11 @@ jobs:
         check-latest: true
 
     - name: Build
+      shell: pwsh
       run: |
-        go build -ldflags "-X main.Version=dev -X main.commit=${{ github.sha }} -X main.date=$(date -u +'%Y-%m-%d_%H:%M:%S')" -v ./...
+        $env:GOOS = if (${{ matrix.os }} -eq 'ubuntu-latest') { 'linux' } elseif (${{ matrix.os }} -eq 'windows-latest') { 'windows' } else { 'darwin' }
+        $env:GOARCH = 'amd64'
+        go build -ldflags "-X main.Version=dev -X main.commit=${{ github.sha }} -X main.date=$(Get-Date -Format 'yyyy-MM-dd_HH:mm:ss')" -v ./...
 
     - name: Test
       run: go test -v ./... 

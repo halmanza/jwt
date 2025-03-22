@@ -61,10 +61,13 @@ jobs:
           check-latest: true
           
       - name: Build
+        shell: pwsh
         run: |
-          GOOS=${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'windows' || 'darwin' }} \
-          GOARCH=${{ matrix.arch }} \
-          go build -o utilities_cli-${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'windows' || 'darwin' }}-${{ matrix.arch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./cmd/cli
+          $env:GOOS = if (${{ matrix.os }} -eq 'ubuntu-latest') { 'linux' } elseif (${{ matrix.os }} -eq 'windows-latest') { 'windows' } else { 'darwin' }
+          $env:GOARCH = ${{ matrix.arch }}
+          $ext = if (${{ matrix.os }} -eq 'windows-latest') { '.exe' } else { '' }
+          $output = "utilities_cli-$($env:GOOS)-$($env:GOARCH)$ext"
+          go build -o $output ./cmd/cli
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4

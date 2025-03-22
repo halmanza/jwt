@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+// Version will be set during build
+var Version = "dev"
+
 func main() {
 	// Set custom usage message
 	flag.Usage = func() {
@@ -17,15 +20,29 @@ func main() {
 	}
 
 	// Parse flags
+	versionFlag := flag.Bool("version", false, "Display version information")
+	helpFlag := flag.Bool("help", false, "Display help information")
 	validateFlag := flag.Bool("validate", false, "Validate JWT signature")
 	algorithmFlag := flag.String("algorithm", "HS256", "Hash algorithm to use (HS256, HS384, HS512)")
 	generateFlag := flag.Bool("generate", false, "Generate a test JWT token")
 	flag.Parse()
 
+	// Show version if requested
+	if *versionFlag {
+		fmt.Printf("jwt version %s\n", Version)
+		os.Exit(0)
+	}
+
+	// Show help if requested
+	if *helpFlag {
+		flag.Usage()
+		os.Exit(0)
+	}
+
 	// Get the command and args after flag parsing
 	args := flag.Args()
 	if len(args) < 1 && !*generateFlag {
-		fmt.Print(cli.UsageMessage)
+		flag.Usage()
 		os.Exit(1)
 	}
 

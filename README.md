@@ -4,6 +4,41 @@ A CLI tool for common tasks with JavaScript Web Tokens (JWT), including decoding
 
 ## Installation
 
+### Windows Installation
+
+1. Download the latest release from [Releases](https://github.com/yourusername/jwt/releases):
+   - Download `jwt_windows_x86_64.zip`
+
+2. Create installation directory:
+   ```powershell
+   # Create a directory in your user's Programs folder
+   mkdir "$env:LOCALAPPDATA\Programs\JWT"
+   ```
+
+3. Extract the downloaded zip and create batch file:
+   - Extract `jwt.exe` to `%LOCALAPPDATA%\Programs\JWT\` (typically `C:\Users\YourUsername\AppData\Local\Programs\JWT\`)
+   - Create a new file `jwt.bat` in the same directory with these contents:
+     ```batch
+     @echo off
+     "%~dp0jwt.exe" %*
+     ```
+
+4. Add to User PATH:
+   - Press Win + X and select "System"
+   - Click "Advanced system settings"
+   - Click "Environment Variables"
+   - Under "User variables for YourUsername", find and select "Path"
+   - Click "Edit" → "New"
+   - Add `%LOCALAPPDATA%\Programs\JWT`
+   - Click "OK" on all windows
+   - Restart any open command prompts or PowerShell windows
+
+5. Verify installation:
+   ```powershell
+   jwt
+   ```
+   This should display the CLI's help information and available commands.
+
 ### Option 1: Download Pre-built Binaries
 
 Visit the [Releases](https://github.com/yourusername/jwt/releases) page to download pre-built binaries for your platform:
@@ -15,19 +50,6 @@ Visit the [Releases](https://github.com/yourusername/jwt/releases) page to downl
 - Linux (arm64): `jwt_linux_arm64.tar.gz`
 
 ### Adding to System PATH
-
-#### Windows
-1. Extract the zip file
-2. Move `jwt.exe` to a permanent location (e.g., `C:\Program Files\jwt\`)
-3. Add to PATH:
-   - Press Win + X and select "System"
-   - Click "Advanced system settings"
-   - Click "Environment Variables"
-   - Under "System Variables", find and select "Path"
-   - Click "Edit" → "New"
-   - Add the folder path (e.g., `C:\Program Files\jwt\`)
-   - Click "OK" on all windows
-   - Restart any open command prompts
 
 #### macOS
 1. Extract the tar.gz file
@@ -167,7 +189,7 @@ Signature: Valid
 
 ## Requirements
 
-- Go 1.21 or higher (for building from source)
+- Go 1.24 or higher (for building from source)
 - Pre-built binaries are available for:
   - Windows (amd64)
   - macOS (amd64, arm64)

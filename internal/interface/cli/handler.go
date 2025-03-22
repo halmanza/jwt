@@ -10,6 +10,14 @@ import (
 	jwtusecase "jwt/internal/usecase/jwt"
 )
 
+// Version is the current version of the CLI tool
+var Version = "dev"
+
+// SetVersion sets the version of the CLI tool
+func SetVersion(v string) {
+	Version = v
+}
+
 // Run executes the CLI command with default configuration
 func Run(args ...string) error {
 	hasher, err := hash.NewHasher(hash.HS256)
@@ -40,6 +48,14 @@ func (h *Handler) Run(args ...string) error {
 		return nil
 	}
 
+	// Check for version flag
+	for _, arg := range args {
+		if arg == "--version" || arg == "-v" {
+			fmt.Printf("jwt version %s\n", Version)
+			return nil
+		}
+	}
+
 	// Find the command and validate flag
 	command := ""
 	validate := false
@@ -49,14 +65,14 @@ func (h *Handler) Run(args ...string) error {
 			command = arg
 			break
 		}
-		if arg == "-validate" {
-			validate = true
-		}
-		if arg == "-generate" {
+		if arg == "generate" {
 			command = "generate"
 			break
 		}
-		if arg == "-algorithm" && i+1 < len(args) {
+		if arg == "-validate" || arg == "--validate" {
+			validate = true
+		}
+		if (arg == "-algorithm" || arg == "--algorithm") && i+1 < len(args) {
 			algo := strings.ToUpper(args[i+1])
 			algorithm = hash.Algorithm(algo)
 		}
@@ -125,8 +141,10 @@ Flags:
         Hash algorithm to use (HS256, HS384, HS512) (default "HS256")
   -validate
         Validate JWT signature
-  -generate
-        Generate a test JWT token with realistic claims
+  -version
+        Display version information
+  -help
+        Display help information
 
 Examples:
   # Decode a JWT token
@@ -136,13 +154,16 @@ Examples:
   jwt decode -validate eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
   # Generate a test JWT token (uses HS256)
-  jwt -generate
+  jwt generate
 
   # Generate a test JWT token with a specific algorithm
-  jwt -generate -algorithm HS384
+  jwt generate --algorithm HS384
 
   # Use a different algorithm
   jwt -algorithm HS384 decode eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9...
+
+  # Show version information
+  jwt --version
 
 Environment Variables:
   JWT_SECRET_KEY    Secret key for validating JWT signatures

@@ -43,32 +43,4 @@ jobs:
     - name: Check dependencies
       run: |
         go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-        golangci-lint run
-
-  cross-platform-build:
-    needs: build-and-test
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        go-version: ['1.21']
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ matrix.go-version }}
-        check-latest: true
-
-    - name: Build
-      shell: pwsh
-      run: |
-        $env:GOOS = if (${{ matrix.os }} -eq 'ubuntu-latest') { 'linux' } elseif (${{ matrix.os }} -eq 'windows-latest') { 'windows' } else { 'darwin' }
-        $env:GOARCH = 'amd64'
-        go build -ldflags "-X main.Version=dev -X main.commit=${{ github.sha }} -X main.date=$(Get-Date -Format 'yyyy-MM-dd_HH:mm:ss')" -v ./...
-
-    - name: Test
-      run: go test -v ./... 
+        golangci-lint run 

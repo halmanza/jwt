@@ -189,7 +189,7 @@ Signature: Valid
 
 ## Requirements
 
-- Go 1.21 or higher (for building from source)
+- Go 1.24 or higher (for building from source)
 - Pre-built binaries are available for:
   - Windows (amd64)
   - macOS (amd64, arm64)

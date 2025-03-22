@@ -30,9 +30,9 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          $env:GOOS = if (${{ matrix.os }} -eq 'ubuntu-latest') { 'linux' } elseif (${{ matrix.os }} -eq 'windows-latest') { 'windows' } else { 'darwin' }
-          $env:GOARCH = ${{ matrix.arch }}
-          $ext = if (${{ matrix.os }} -eq 'windows-latest') { '.exe' } else { '' }
+          $env:GOOS = if ('${{ matrix.os }}' -eq 'ubuntu-latest') { 'linux' } elseif ('${{ matrix.os }}' -eq 'windows-latest') { 'windows' } else { 'darwin' }
+          $env:GOARCH = '${{ matrix.arch }}'
+          $ext = if ('${{ matrix.os }}' -eq 'windows-latest') { '.exe' } else { '' }
           $output = "utilities_cli-$($env:GOOS)-$($env:GOARCH)$ext"
           go build -o $output ./cmd/cli
           
